@@ -19,18 +19,27 @@ async def new_member(update: Update, context: CallbackContext):
 
 # Function to detect video chat invitations and reactions
 async def handle_video_chat(update: Update, context: CallbackContext):
+    group_name = update.message.chat.title  # Get the group name
+
     # If a message contains a video chat invitation
     if update.message.video_chat_started:
         await context.bot.send_message(
             chat_id=update.message.chat_id,
-            text="A video chat has started!"
+            text=f"A video chat has started in {group_name}!"
         )
 
-    # For members joining the video chat (this might not work directly for all video chat events)
+    # For members joining the video chat
     if update.message.video_chat_participant_joined:
         await context.bot.send_message(
             chat_id=update.message.chat_id,
-            text=f"{update.message.video_chat_participant_joined} has joined the video chat."
+            text=f"{update.message.video_chat_participant_joined} has joined the video chat in {group_name}."
+        )
+
+    # For video chat ending
+    if update.message.video_chat_ended:
+        await context.bot.send_message(
+            chat_id=update.message.chat_id,
+            text=f"The video chat has ended in {group_name}."
         )
 
 # Main function to run the bot
@@ -43,7 +52,7 @@ async def main():
 
     # Handlers for new member and video chat messages
     application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member))
-    application.add_handler(MessageHandler(filters.VideoChat.ANY, handle_video_chat))
+    application.add_handler(MessageHandler(filters.TEXT, handle_video_chat))  # Update this line
 
     # Start polling for messages
     await application.run_polling()
