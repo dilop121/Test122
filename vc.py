@@ -1,5 +1,6 @@
 from telegram import Update
-from telegram.ext import Updater, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, MessageHandler, CallbackContext
+from telegram.ext import filters
 import logging
 
 # Set up logging to monitor bot's activity
@@ -37,12 +38,12 @@ def main():
     # Use your own bot token here
     bot_token = '7581811310:AAFV_hoOlzbrctAxaz_0eQtwk9oTttGR9N8'
     
-    updater = Updater(token=bot_token, use_context=True)
+    updater = Updater(token=bot_token)
     dp = updater.dispatcher
 
     # Handlers for new member and video chat messages
-    dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
-    dp.add_handler(MessageHandler(Filters.video_chat, handle_video_chat))
+    dp.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member))
+    dp.add_handler(MessageHandler(filters.VideoChat.ANY, handle_video_chat))
 
     # Start polling for messages
     updater.start_polling()
