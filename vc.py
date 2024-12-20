@@ -48,6 +48,14 @@ async def main():
 
 if __name__ == '__main__':
     try:
-        asyncio.get_event_loop().run_until_complete(main())
-    except RuntimeError:
+        import nest_asyncio
+        nest_asyncio.apply()  # This is for environments that already have an event loop (e.g., Jupyter Notebooks)
         asyncio.run(main())
+    except RuntimeError:
+        # If an event loop is already running, just use await directly
+        import sys
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            loop.create_task(main())
+        else:
+            asyncio.run(main())
